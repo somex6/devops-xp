@@ -12,7 +12,7 @@
       }
     ]
   },
-  "description": "Fixed Log Viewer Dashboard for Docker Swarm using Loki",
+  "description": "Log Viewer Dashboard for Docker Swarm using Loki with service_name",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
@@ -61,7 +61,7 @@
       },
       "targets": [
         {
-          "expr": "{container_name=~\"$container\"}",
+          "expr": "{service_name=~\"$service\"}",
           "refId": "A"
         }
       ],
@@ -92,7 +92,7 @@
       },
       "targets": [
         {
-          "expr": "{container_name=~\"$container\"} |= \"error\" |~ \"(?i)exception|fail|crash\"",
+          "expr": "{service_name=~\"$service\"} |= \"error\" |~ \"(?i)exception|fail|crash\"",
           "refId": "A"
         }
       ],
@@ -131,12 +131,12 @@
       },
       "targets": [
         {
-          "expr": "sum(rate({container_name=~\"$container\"}[5m])) by (container_name)",
-          "legendFormat": "{{container_name}}",
+          "expr": "sum(rate({service_name=~\"$service\"}[5m])) by (service_name)",
+          "legendFormat": "{{service_name}}",
           "refId": "A"
         }
       ],
-      "title": "Log Volume by Container",
+      "title": "Log Volume by Service",
       "type": "timeseries"
     }
   ],
@@ -178,15 +178,15 @@
           "type": "loki",
           "uid": "${datasource}"
         },
-        "definition": "label_values({container_name=~\".+\"}, container_name)",
+        "definition": "label_values({job=~\".+\"}, service_name)",
         "hide": 0,
         "includeAll": true,
-        "label": "Container",
+        "label": "Service",
         "multi": false,
-        "name": "container",
+        "name": "service",
         "options": [],
         "query": {
-          "query": "label_values({container_name=~\".+\"}, container_name)",
+          "query": "label_values({job=~\".+\"}, service_name)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
@@ -198,7 +198,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {
@@ -225,8 +225,8 @@
     ]
   },
   "timezone": "",
-  "title": "Docker Swarm Fixed Log Viewer",
-  "uid": "docker-swarm-loki-fixed-logs",
-  "version": 2,
+  "title": "Docker Swarm Service Log Viewer",
+  "uid": "docker-swarm-loki-service-logs",
+  "version": 1,
   "weekStart": ""
 }
