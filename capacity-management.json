@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "datasource",
-          "uid": "grafana"
+          "type": "grafana",
+          "uid": "-- Grafana --"
         },
         "enable": true,
         "hide": true,
@@ -21,8 +21,8 @@
       }
     ]
   },
-  "description": "Standard Kubernetes/OpenShift namespace monitoring dashboard (needs Prometheus recording rules)",
-  "editable": false,
+  "description": "Docker Swarm service monitoring dashboard with CPU, memory, and storage metrics",
+  "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
@@ -39,917 +39,782 @@
       "type": "link",
       "url": "https://github.com/onzack/grafana-dashboards"
     }
-  ]
-"panels": [
-  {
-    "collapsed": true,
-    "gridPos": {
-      "h": 1,
-      "w": 24,
-      "x": 0,
-      "y": 34
-    },
-    "id": 21,
-    "panels": [
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "custom": {
-              "align": "center",
-              "cellOptions": {
-                "type": "auto"
-              },
-              "inspect": false
-            },
-            "mappings": [],
-            "min": 0,
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green"
-                },
-                {
-                  "color": "orange",
-                  "value": 80
-                },
-                {
-                  "color": "red",
-                  "value": 90
-                }
-              ]
-            }
-          },
-          "overrides": [
-            {
-              "matcher": {
-                "id": "byName",
-                "options": "Value #cpu-usage"
-              },
-              "properties": [
-                {
-                  "id": "displayName",
-                  "value": "CPU Usage"
-                },
-                {
-                  "id": "unit",
-                  "value": "percent"
-                }
-              ]
-            },
-            {
-              "matcher": {
-                "id": "byName",
-                "options": "Value #memory-usage"
-              },
-              "properties": [
-                {
-                  "id": "displayName",
-                  "value": "Memory Usage"
-                },
-                {
-                  "id": "unit",
-                  "value": "percent"
-                }
-              ]
-            },
-            {
-              "matcher": {
-                "id": "byName",
-                "options": "Value #storage-usage"
-              },
-              "properties": [
-                {
-                  "id": "displayName",
-                  "value": "Storage Usage"
-                },
-                {
-                  "id": "unit",
-                  "value": "percent"
-                }
-              ]
-            },
-            {
-              "matcher": {
-                "id": "byName",
-                "options": "service"
-              },
-              "properties": [
-                {
-                  "id": "displayName",
-                  "value": "Service"
-                },
-                {
-                  "id": "custom.align",
-                  "value": "left"
-                }
-              ]
-            }
-          ]
-        },
-        "gridPos": {
-          "h": 4,
-          "w": 24,
-          "x": 0,
-          "y": 35
-        },
-        "id": 3,
-        "options": {
-          "cellHeight": "sm",
-          "footer": {
-            "countRows": false,
-            "fields": "",
-            "reducer": ["sum"],
-            "show": false
-          },
-          "showHeader": true,
-          "sortBy": [
-            {
-              "desc": true,
-              "displayName": "CPU Usage"
-            }
-          ]
-        },
-        "pluginVersion": "11.3.0",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "exemplar": false,
-            "expr": "100 * sum by (docker_service_name) (rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=~\"$service\"}[5m])) / sum by (docker_service_name) (container_spec_cpu_quota{container_label_com_docker_swarm_service_name=~\"$service\"} / container_spec_cpu_period{container_label_com_docker_swarm_service_name=~\"$service\"})",
-            "format": "table",
-            "instant": true,
-            "interval": "",
-            "legendFormat": "",
-            "refId": "cpu-usage"
-          },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "exemplar": false,
-            "expr": "100 * sum by (docker_service_name) (container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_spec_memory_limit_bytes{container_label_com_docker_swarm_service_name=~\"$service\"})",
-            "format": "table",
-            "instant": true,
-            "interval": "",
-            "legendFormat": "",
-            "refId": "memory-usage"
-          },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "exemplar": false,
-            "expr": "100 * sum by (docker_service_name) (container_fs_usage_bytes{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_fs_limit_bytes{container_label_com_docker_swarm_service_name=~\"$service\"})",
-            "format": "table",
-            "instant": true,
-            "interval": "",
-            "legendFormat": "",
-            "refId": "storage-usage"
-          }
-        ],
-        "title": "Service Resource Usage ($service)",
-        "transformations": [
-          {
-            "id": "merge",
-            "options": {}
-          },
-          {
-            "id": "organize",
-            "options": {
-              "excludeByName": {
-                "Time": true,
-                "__name__": true,
-                "container": true,
-                "endpoint": true,
-                "instance": true,
-                "job": true,
-                "namespace": true,
-                "pod": true,
-                "resource": true,
-                "service": true
-              },
-              "indexByName": {
-                "docker_service_name": 0
-              },
-              "renameByName": {
-                "docker_service_name": "service"
-              }
-            }
-          }
-        ],
-        "type": "table",
-        "alert": {
-          "alertRuleTags": {},
-          "conditions": [
-            {
-              "evaluator": {
-                "params": [80],
-                "type": "gt"
-              },
-              "operator": {
-                "type": "and"
-              },
-              "query": {
-                "params": ["cpu-usage", "5m", "now"]
-              },
-              "reducer": {
-                "params": [],
-                "type": "avg"
-              },
-              "type": "query"
-            }
-          ],
-          "executionErrorState": "alerting",
-          "for": "5m",
-          "frequency": "1m",
-          "handler": 1,
-          "name": "High CPU Usage Alert",
-          "message": "CPU usage for service {{ $labels.service }} exceeds 80%",
-          "notifications": []
-        }
+  ],
+  "panels": [
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
       },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green"
-                }
-              ]
-            },
-            "unit": "percent"
+      "id": 21,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
           },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 3,
-          "w": 4,
-          "x": 0,
-          "y": 39
-        },
-        "id": 2,
-        "options": {
-          "colorMode": "none",
-          "graphMode": "none",
-          "justifyMode": "auto",
-          "orientation": "auto",
-          "percentChangeColorMode": "standard",
-          "reduceOptions": {
-            "calcs": ["lastNotNull"],
-            "fields": "",
-            "values": false
-          },
-          "showPercentChange": false,
-          "textMode": "auto",
-          "wideLayout": true
-        },
-        "pluginVersion": "11.3.0",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "exemplar": false,
-            "expr": "100 * sum(rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=~\"$service\"}[5m]))",
-            "instant": true,
-            "interval": "",
-            "legendFormat": "",
-            "refId": "A"
-          }
-        ],
-        "title": "CPU Usage",
-        "type": "stat"
-      },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green"
-                }
-              ]
-            },
-            "unit": "bytes"
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 3,
-          "w": 4,
-          "x": 4,
-          "y": 39
-        },
-        "id": 5,
-        "options": {
-          "colorMode": "none",
-          "graphMode": "none",
-          "justifyMode": "auto",
-          "orientation": "auto",
-          "percentChangeColorMode": "standard",
-          "reduceOptions": {
-            "calcs": ["lastNotNull"],
-            "fields": "",
-            "values": false
-          },
-          "showPercentChange": false,
-          "textMode": "auto",
-          "wideLayout": true
-        },
-        "pluginVersion": "11.3.0",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "exemplar": false,
-            "expr": "sum(container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=~\"$service\"})",
-            "instant": true,
-            "interval": "",
-            "legendFormat": "",
-            "refId": "A"
-          }
-        ],
-        "title": "Memory Usage",
-        "type": "stat"
-      },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green"
-                }
-              ]
-            },
-            "unit": "bytes"
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 3,
-          "w": 4,
-          "x": 8,
-          "y": 39
-        },
-        "id": 92,
-        "options": {
-          "colorMode": "none",
-          "graphMode": "none",
-          "justifyMode": "auto",
-          "orientation": "auto",
-          "percentChangeColorMode": "standard",
-          "reduceOptions": {
-            "calcs": ["lastNotNull"],
-            "fields": "",
-            "values": false
-          },
-          "showPercentChange": false,
-          "textMode": "auto",
-          "wideLayout": true
-        },
-        "pluginVersion": "11.3.0",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "exemplar": false,
-            "expr": "sum(container_fs_usage_bytes{container_label_com_docker_swarm_service_name=~\"$service\"})",
-            "instant": true,
-            "interval": "",
-            "legendFormat": "",
-            "refId": "A"
-          }
-        ],
-        "title": "Storage Usage",
-        "type": "stat"
-      },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "palette-classic"
-            },
-            "custom": {
-              "axisBorderShow": false,
-              "axisCenteredZero": false,
-              "axisColorMode": "text",
-              "axisLabel": "",
-              "axisPlacement": "auto",
-              "barAlignment": 0,
-              "barWidthFactor": 0.6,
-              "drawStyle": "line",
-              "fillOpacity": 10,
-              "gradientMode": "none",
-              "hideFrom": {
-                "legend": false,
-                "tooltip": false,
-                "viz": false
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
               },
-              "insertNulls": false,
-              "lineInterpolation": "linear",
-              "lineWidth": 1,
-              "pointSize": 3,
-              "scaleDistribution": {
-                "type": "linear"
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
               },
-              "showPoints": "auto",
-              "spanNulls": false,
-              "stacking": {
-                "group": "A",
-                "mode": "none"
-              },
-              "thresholdsStyle": {
-                "mode": "area"
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green" },
+                  { "color": "orange", "value": 80 },
+                  { "color": "red", "value": 90 }
+                ]
               }
             },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green"
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value #cpu-usage"
                 },
-                {
-                  "color": "orange",
-                  "value": 0.8
+                "properties": [
+                  { "id": "displayName", "value": "CPU Usage" },
+                  { "id": "unit", "value": "percent" }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value #memory-usage"
                 },
-                {
-                  "color": "red",
-                  "value": 0.9
-                }
-              ]
-            },
-            "unit": "percentunit"
+                "properties": [
+                  { "id": "displayName", "value": "Memory Usage" },
+                  { "id": "unit", "value": "percent" }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value #storage-usage"
+                },
+                "properties": [
+                  { "id": "displayName", "value": "Storage Usage" },
+                  { "id": "unit", "value": "percent" }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "service"
+                },
+                "properties": [
+                  { "id": "displayName", "value": "Service" },
+                  { "id": "custom.align", "value": "left" }
+                ]
+              }
+            ]
           },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 6,
-          "w": 12,
-          "x": 0,
-          "y": 42
-        },
-        "id": 44,
-        "options": {
-          "legend": {
-            "calcs": [],
-            "displayMode": "list",
-            "placement": "bottom",
-            "showLegend": true
+          "gridPos": {
+            "h": 4,
+            "w": 24,
+            "x": 0,
+            "y": 1
           },
-          "tooltip": {
-            "mode": "multi",
-            "sort": "none"
-          }
-        },
-        "pluginVersion": "11.3.0",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
+          "id": 3,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": ["sum"],
+              "show": false
             },
-            "exemplar": false,
-            "expr": "sum by (docker_service_name) (rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=~\"$service\"}[5m])) / sum by (docker_service_name) (container_spec_cpu_quota{container_label_com_docker_swarm_service_name=~\"$service\"} / container_spec_cpu_period{container_label_com_docker_swarm_service_name=~\"$service\"})",
-            "interval": "",
-            "legendFormat": "{{docker_service_name}} CPU",
-            "refId": "A"
+            "showHeader": true,
+            "sortBy": [
+              { "desc": true, "displayName": "CPU Usage" }
+            ]
           },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "exemplar": false,
-            "expr": "sum by (docker_service_name) (container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_spec_memory_limit_bytes{container_label_com_docker_swarm_service_name=~\"$service\"})",
-            "interval": "",
-            "legendFormat": "{{docker_service_name}} Memory",
-            "refId": "B"
-          }
-        ],
-        "title": "Service CPU and Memory Usage",
-        "type": "timeseries",
-        "alert": {
-          "alertRuleTags": {},
-          "conditions": [
+          "pluginVersion": "11.3.0",
+          "targets": [
             {
-              "evaluator": {
-                "params": [0.8],
-                "type": "gt"
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
               },
-              "operator": {
-                "type": "and"
+              "exemplar": false,
+              "expr": "100 * sum by (docker_service_name) (container_cpu_usage_seconds_total:sum_rate5m{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_cpu_requests:running{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "cpu-usage"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
               },
-              "query": {
-                "params": ["A", "5m", "now"]
+              "exemplar": false,
+              "expr": "100 * sum by (docker_service_name) (container_memory_working_set_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_memory_limits:running{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "memory-usage"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
               },
-              "reducer": {
-                "params": [],
-                "type": "avg"
-              },
-              "type": "query"
+              "exemplar": false,
+              "expr": "100 * sum by (docker_service_name) (container_fs_usage_bytes{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_fs_limit_bytes{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "storage-usage"
             }
           ],
-          "executionErrorState": "alerting",
-          "for": "5m",
-          "frequency": "1m",
-          "handler": 1,
-          "name": "High Service CPU Usage Alert",
-          "message": "CPU usage for service {{ $labels.docker_service_name }} exceeds 80%",
-          "notifications": []
+          "title": "Service Resource Usage ($service)",
+          "transformations": [
+            { "id": "merge", "options": {} },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "container": true,
+                  "endpoint": true,
+                  "instance": true,
+                  "job": true,
+                  "namespace": true,
+                  "pod": true,
+                  "resource": true,
+                  "service": true
+                },
+                "indexByName": { "docker_service_name": 0 },
+                "renameByName": { "docker_service_name": "service" }
+              }
+            }
+          ],
+          "type": "table",
+          "alert": {
+            "alertRuleTags": {},
+            "conditions": [
+              {
+                "evaluator": { "params": [80], "type": "gt" },
+                "operator": { "type": "and" },
+                "query": { "params": ["cpu-usage", "5m", "now"] },
+                "reducer": { "params": [], "type": "avg" },
+                "type": "query"
+              }
+            ],
+            "executionErrorState": "alerting",
+            "for": "5m",
+            "frequency": "1m",
+            "handler": 1,
+            "name": "High CPU Usage Alert",
+            "message": "CPU usage for service {{ $labels.docker_service_name }} exceeds 80%",
+            "notifications": []
+          }
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "thresholds" },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [{ "color": "green" }]
+              },
+              "unit": "percent"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 4,
+            "x": 0,
+            "y": 5
+          },
+          "id": 2,
+          "options": {
+            "colorMode": "none",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": ["lastNotNull"],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "exemplar": false,
+              "expr": "100 * sum(container_cpu_usage_seconds_total:sum_rate5m{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "CPU Usage",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "thresholds" },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [{ "color": "green" }]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 4,
+            "x": 4,
+            "y": 5
+          },
+          "id": 5,
+          "options": {
+            "colorMode": "none",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": ["lastNotNull"],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "exemplar": false,
+              "expr": "sum(container_memory_working_set_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "Memory Usage",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "thresholds" },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [{ "color": "green" }]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 4,
+            "x": 8,
+            "y": 5
+          },
+          "id": 92,
+          "options": {
+            "colorMode": "none",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": ["lastNotNull"],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "exemplar": false,
+              "expr": "sum(container_fs_usage_bytes{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "Storage Usage",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 3,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "area" }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green" },
+                  { "color": "orange", "value": 0.8 },
+                  { "color": "red", "value": 0.9 }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 8
+          },
+          "id": 44,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": { "mode": "multi", "sort": "none" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "exemplar": false,
+              "expr": "sum by (docker_service_name) (container_cpu_usage_seconds_total:sum_rate5m{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_cpu_requests:running{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "interval": "",
+              "legendFormat": "{{docker_service_name}} CPU",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "exemplar": false,
+              "expr": "sum by (docker_service_name) (container_memory_working_set_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_memory_limits:running{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "interval": "",
+              "legendFormat": "{{docker_service_name}} Memory",
+              "refId": "B"
+            }
+          ],
+          "title": "Service CPU and Memory Usage",
+          "type": "timeseries",
+          "alert": {
+            "alertRuleTags": {},
+            "conditions": [
+              {
+                "evaluator": { "params": [0.8], "type": "gt" },
+                "operator": { "type": "and" },
+                "query": { "params": ["A", "5m", "now"] },
+                "reducer": { "params": [], "type": "avg" },
+                "type": "query"
+              }
+            ],
+            "executionErrorState": "alerting",
+            "for": "5m",
+            "frequency": "1m",
+            "handler": 1,
+            "name": "High Service CPU Usage Alert",
+            "message": "CPU usage for service {{ $labels.docker_service_name }} exceeds 80%",
+            "notifications": []
+          }
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "palette-classic" },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 3,
+                "scaleDistribution": { "type": "linear" },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": { "group": "A", "mode": "none" },
+                "thresholdsStyle": { "mode": "area" }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green" },
+                  { "color": "orange", "value": 0.8 },
+                  { "color": "red", "value": 0.9 }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 8
+          },
+          "id": 99,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": { "mode": "single", "sort": "none" }
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "exemplar": false,
+              "expr": "sum by (docker_service_name) (container_fs_usage_bytes{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_fs_limit_bytes{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "interval": "",
+              "legendFormat": "{{docker_service_name}} Storage",
+              "refId": "A"
+            }
+          ],
+          "title": "Service Storage Usage",
+          "type": "timeseries",
+          "alert": {
+            "alertRuleTags": {},
+            "conditions": [
+              {
+                "evaluator": { "params": [0.8], "type": "gt" },
+                "operator": { "type": "and" },
+                "query": { "params": ["A", "5m", "now"] },
+                "reducer": { "params": [], "type": "avg" },
+                "type": "query"
+              }
+            ],
+            "executionErrorState": "alerting",
+            "for": "5m",
+            "frequency": "1m",
+            "handler": 1,
+            "name": "High Storage Usage Alert",
+            "message": "Storage usage for service {{ $labels.docker_service_name }} exceeds 80%",
+            "notifications": []
+          }
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": { "mode": "thresholds" },
+              "custom": {
+                "align": "center",
+                "cellOptions": { "type": "auto" },
+                "filterable": false,
+                "inspect": false
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green" },
+                  { "color": "red", "value": 80 }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "container"
+                },
+                "properties": [
+                  { "id": "displayName", "value": "Container" },
+                  { "id": "custom.align", "value": "left" }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value #cpu-usage"
+                },
+                "properties": [
+                  { "id": "displayName", "value": "CPU Usage" },
+                  { "id": "unit", "value": "percent" },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": { "mode": "lcd", "type": "gauge" }
+                  },
+                  { "id": "max", "value": 100 }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value #memory-usage"
+                },
+                "properties": [
+                  { "id": "displayName", "value": "Memory Usage" },
+                  { "id": "unit", "value": "percent" },
+                  {
+                    "id": "custom.cellOptions",
+                    "value": { "mode": "lcd", "type": "gauge" }
+                  },
+                  { "id": "max", "value": 100 }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 24,
+            "x": 0,
+            "y": 14
+          },
+          "id": 87,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": ["sum"],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": [
+              { "desc": true, "displayName": "CPU Usage" }
+            ]
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "exemplar": false,
+              "expr": "100 * sum by (container_name, docker_service_name) (container_cpu_usage_seconds_total:sum_rate5m{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (container_name, docker_service_name) (container_cpu_requests:running{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "cpu-usage"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_PROMETHEUS}"
+              },
+              "exemplar": false,
+              "expr": "100 * sum by (container_name, docker_service_name) (container_memory_working_set_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (container_name, docker_service_name) (container_memory_limits:running{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "memory-usage"
+            }
+          ],
+          "title": "Container Resource Usage",
+          "transformations": [
+            { "id": "merge", "options": {} },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": { "Time": true },
+                "indexByName": {
+                  "container_name": 0,
+                  "docker_service_name": 1
+                },
+                "renameByName": {
+                  "container_name": "container",
+                  "docker_service_name": "service"
+                }
+              }
+            }
+          ],
+          "type": "table",
+          "alert": {
+            "alertRuleTags": {},
+            "conditions": [
+              {
+                "evaluator": { "params": [80], "type": "gt" },
+                "operator": { "type": "and" },
+                "query": { "params": ["cpu-usage", "5m", "now"] },
+                "reducer": { "params": [], "type": "avg" },
+                "type": "query"
+              }
+            ],
+            "executionErrorState": "alerting",
+            "for": "5m",
+            "frequency": "1m",
+            "handler": 1,
+            "name": "High Container CPU Usage Alert",
+            "message": "CPU usage for container {{ $labels.container_name }} in service {{ $labels.docker_service_name }} exceeds 80%",
+            "notifications": []
+          }
         }
+      ],
+      "title": "Capacity Management",
+      "type": "row"
+    }
+  ],
+  "refresh": "5m",
+  "schemaVersion": 40,
+  "style": "dark",
+  "tags": ["swarm", "prometheus", "monitoring"],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "includeAll": false,
+        "label": "Datasource",
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "type": "datasource"
       },
       {
+        "current": {},
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "palette-classic"
-            },
-            "custom": {
-              "axisBorderShow": false,
-              "axisCenteredZero": false,
-              "axisColorMode": "text",
-              "axisLabel": "",
-              "axisPlacement": "auto",
-              "barAlignment": 0,
-              "barWidthFactor": 0.6,
-              "drawStyle": "line",
-              "fillOpacity": 10,
-              "gradientMode": "none",
-              "hideFrom": {
-                "legend": false,
-                "tooltip": false,
-                "viz": false
-              },
-              "insertNulls": false,
-              "lineInterpolation": "linear",
-              "lineWidth": 1,
-              "pointSize": 3,
-              "scaleDistribution": {
-                "type": "linear"
-              },
-              "showPoints": "auto",
-              "spanNulls": false,
-              "stacking": {
-                "group": "A",
-                "mode": "none"
-              },
-              "thresholdsStyle": {
-                "mode": "area"
-              }
-            },
-            "mappings": [],
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green"
-                },
-                {
-                  "color": "orange",
-                  "value": 0.8
-                },
-                {
-                  "color": "red",
-                  "value": 0.9
-                }
-              ]
-            },
-            "unit": "percentunit"
-          },
-          "overrides": []
+        "definition": "label_values(container_cpu_usage_seconds_total, container_label_com_docker_swarm_service_name)",
+        "includeAll": true,
+        "label": "Service",
+        "name": "service",
+        "options": [],
+        "query": {
+          "query": "label_values(container_cpu_usage_seconds_total, container_label_com_docker_swarm_service_name)",
+          "refId": "StandardVariableQuery"
         },
-        "gridPos": {
-          "h": 6,
-          "w": 12,
-          "x": 12,
-          "y": 42
-        },
-        "id": 99,
-        "options": {
-          "legend": {
-            "calcs": [],
-            "displayMode": "list",
-            "placement": "bottom",
-            "showLegend": true
-          },
-          "tooltip": {
-            "mode": "single",
-            "sort": "none"
-          }
-        },
-        "pluginVersion": "11.3.0",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "exemplar": false,
-            "expr": "sum by (docker_service_name) (container_fs_usage_bytes{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_fs_limit_bytes{container_label_com_docker_swarm_service_name=~\"$service\"})",
-            "interval": "",
-            "legendFormat": "{{docker_service_name}} Storage",
-            "refId": "A"
-          }
-        ],
-        "title": "Service Storage Usage",
-        "type": "timeseries",
-        "alert": {
-          "alertRuleTags": {},
-          "conditions": [
-            {
-              "evaluator": {
-                "params": [0.8],
-                "type": "gt"
-              },
-              "operator": {
-                "type": "and"
-              },
-              "query": {
-                "params": ["A", "5m", "now"]
-              },
-              "reducer": {
-                "params": [],
-                "type": "avg"
-              },
-              "type": "query"
-            }
-          ],
-          "executionErrorState": "alerting",
-          "for": "5m",
-          "frequency": "1m",
-          "handler": 1,
-          "name": "High Storage Usage Alert",
-          "message": "Storage usage for service {{ $labels.docker_service_name }} exceeds 80%",
-          "notifications": []
-        }
-      },
-      {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "custom": {
-              "align": "center",
-              "cellOptions": {
-                "type": "auto"
-              },
-              "filterable": false,
-              "inspect": false
-            },
-            "mappings": [],
-            "min": 0,
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "green"
-                },
-                {
-                  "color": "red",
-                  "value": 80
-                }
-              ]
-            }
-          },
-          "overrides": [
-            {
-              "matcher": {
-                "id": "byName",
-                "options": "container"
-              },
-              "properties": [
-                {
-                  "id": "displayName",
-                  "value": "Container"
-                },
-                {
-                  "id": "custom.align",
-                  "value": "left"
-                }
-              ]
-            },
-            {
-              "matcher": {
-                "id": "byName",
-                "options": "Value #cpu-usage"
-              },
-              "properties": [
-                {
-                  "id": "displayName",
-                  "value": "CPU Usage"
-                },
-                {
-                  "id": "unit",
-                  "value": "percent"
-                },
-                {
-                  "id": "custom.cellOptions",
-                  "value": {
-                    "mode": "lcd",
-                    "type": "gauge"
-                  }
-                },
-                {
-                  "id": "max",
-                  "value": 100
-                }
-              ]
-            },
-            {
-              "matcher": {
-                "id": "byName",
-                "options": "Value #memory-usage"
-              },
-              "properties": [
-                {
-                  "id": "displayName",
-                  "value": "Memory Usage"
-                },
-                {
-                  "id": "unit",
-                  "value": "percent"
-                },
-                {
-                  "id": "custom.cellOptions",
-                  "value": {
-                    "mode": "lcd",
-                    "type": "gauge"
-                  }
-                },
-                {
-                  "id": "max",
-                  "value": 100
-                }
-              ]
-            }
-          ]
-        },
-        "gridPos": {
-          "h": 7,
-          "w": 24,
-          "x": 0,
-          "y": 48
-        },
-        "id": 87,
-        "options": {
-          "cellHeight": "sm",
-          "footer": {
-            "countRows": false,
-            "fields": "",
-            "reducer": ["sum"],
-            "show": false
-          },
-          "showHeader": true,
-          "sortBy": [
-            {
-              "desc": true,
-              "displayName": "CPU Usage"
-            }
-          ]
-        },
-        "pluginVersion": "11.3.0",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "exemplar": false,
-            "expr": "100 * sum by (container, docker_service_name) (rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name=~\"$service\"}[5m])) / sum by (container, docker_service_name) (container_spec_cpu_quota{container_label_com_docker_swarm_service_name=~\"$service\"} / container_spec_cpu_period{container_label_com_docker_swarm_service_name=~\"$service\"})",
-            "format": "table",
-            "instant": true,
-            "interval": "",
-            "legendFormat": "",
-            "refId": "cpu-usage"
-          },
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_PROMETHEUS}"
-            },
-            "exemplar": false,
-            "expr": "100 * sum by (container, docker_service_name) (container_memory_working_set_bytes{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (container, docker_service_name) (container_spec_memory_limit_bytes{container_label_com_docker_swarm_service_name=~\"$service\"})",
-            "format": "table",
-            "instant": true,
-            "interval": "",
-            "legendFormat": "",
-            "refId": "memory-usage"
-          }
-        ],
-        "title": "Container Resource Usage",
-        "transformations": [
-          {
-            "id": "merge",
-            "options": {}
-          },
-          {
-            "id": "organize",
-            "options": {
-              "excludeByName": {
-                "Time": true
-              },
-              "indexByName": {
-                "container": 0,
-                "docker_service_name": 1
-              },
-              "renameByName": {
-                "docker_service_name": "service"
-              }
-            }
-          }
-        ],
-        "type": "table",
-        "alert": {
-          "alertRuleTags": {},
-          "conditions": [
-            {
-              "evaluator": {
-                "params": [80],
-                "type": "gt"
-              },
-              "operator": {
-                "type": "and"
-              },
-              "query": {
-                "params": ["cpu-usage", "5m", "now"]
-              },
-              "reducer": {
-                "params": [],
-                "type": "avg"
-              },
-              "type": "query"
-            }
-          ],
-          "executionErrorState": "alerting",
-          "for": "5m",
-          "frequency": "1m",
-          "handler": 1,
-          "name": "High Container CPU Usage Alert",
-          "message": "CPU usage for container {{ $labels.container }} in service {{ $labels.service }} exceeds 80%",
-          "notifications": []
-        }
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
       }
-    ],
-    "title": "Capacity Management",
-    "type": "row"
-  }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Swarm Service Metrics",
+  "uid": "gtyfd456yt",
+  "version": 25,
+  "weekStart": ""
+}
