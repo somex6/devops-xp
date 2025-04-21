@@ -1,0 +1,36 @@
+groups:
+- name: cpu
+  rules:
+  - record: container_cpu_usage_seconds_total:sum_rate5m
+    expr: sum by (container_name, docker_service_name) (rate(container_cpu_usage_seconds_total{container_label_com_docker_swarm_service_name!="", container_name!=""}[5m]))
+  - record: container_cpu_requests:running
+    expr: sum by (container_name, docker_service_name) (container_spec_cpu_quota{container_label_com_docker_swarm_service_name!="", container_name!=""} / container_spec_cpu_period{container_label_com_docker_swarm_service_name!="", container_name!=""})
+  - record: container_cpu_limits:running
+    expr: sum by (container_name, docker_service_name) (container_spec_cpu_quota{container_label_com_docker_swarm_service_name!="", container_name!=""}
+    expr: sum by (container_name, docker_service_name) (container_spec_cpu_quota{container_label_com_docker_swarm_service_name!="", container_name!=""} / container_spec_cpu_period{container_label_com_docker_swarm_service_name!="", container_name!=""}) * 0.8
+  - record: container_cpu_cfs_throttling:percent
+    expr: 100 * sum by (container_name, docker_service_name) (increase(container_cpu_cfs_throttled_periods_total{container_label_com_docker_swarm_service_name!="", container_name!=""}[5m])) / sum by (container_name, docker_service_name) (increase(container_cpu_cfs_periods_total{container_label_com_docker_swarm_service_name!="", container_name!=""}[5m]))
+- name: memory
+  rules:
+  - record: container_memory_working_set_bytes:sum
+    expr: sum by (container_name, docker_service_name) (container_memory_working_set_bytes{container_label_com_docker_swarm_service_name!="", container_name!=""})
+  - record: container_memory_requests:running
+    expr: sum by (container_name, docker_service_name) (container_spec_memory_limit_bytes{container_label_com_docker_swarm_service_name!="", container_name!=""}) * 0.5
+  - record: container_memory_limits:running
+    expr: sum by (container_name, docker_service_name) (container_spec_memory_limit_bytes{container_label_com_docker_swarm_service_name!="", container_name!=""})
+- name: storage
+  rules:
+  - record: container_fs_reads_bytes_total:sum_rate5m
+    expr: sum by (container_name, docker_service_name) (rate(container_fs_reads_bytes_total{container_label_com_docker_swarm_service_name!="", container_name!=""}[5m]))
+  - record: container_fs_writes_bytes_total:sum_rate5m
+    expr: sum by (container_name, docker_service_name) (rate(container_fs_writes_bytes_total{container_label_com_docker_swarm_service_name!="", container_name!=""}[5m]))
+- name: network
+  rules:
+  - record: container_network_receive_bytes_total:sum_rate5m
+    expr: sum by (docker_service_name) (rate(container_network_receive_bytes_total{container_label_com_docker_swarm_service_name!="", container_name!=""}[5m]))
+  - record: container_network_transmit_bytes_total:sum_rate5m
+    expr: sum by (docker_service_name) (rate(container_network_transmit_bytes_total{container_label_com_docker_swarm_service_name!="", container_name!=""}[5m]))
+  - record: container_network_receive_packets_dropped_total:sum_rate5m
+    expr: sum by (docker_service_name) (rate(container_network_receive_packets_dropped_total{container_label_com_docker_swarm_service_name!="", container_name!=""}[5m]))
+  - record: container_network_transmit_packets_dropped_total:sum_rate5m
+    expr: sum by (docker_service_name) (rate(container_network_transmit_packets_dropped_total{container_label_com_docker_swarm_service_name!="", container_name!=""}[5m]))
