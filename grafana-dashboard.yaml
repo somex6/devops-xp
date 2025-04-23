@@ -1,4 +1,3 @@
-```json
 {
   "__inputs": [
     {
@@ -71,7 +70,7 @@
       }
     ]
   },
-  "description": "Docker Swarm service monitoring dashboard with CPU, memory, and storage metrics. Ensure container_cpu_usage_seconds_total, container_memory_working_set_bytes, container_spec_cpu_quota, container_spec_memory_limit_bytes, container_fs_usage_bytes, and container_fs_limit_bytes are available in cAdvisor. Configure Grafana notification policies to route alerts to Alertmanager for Microsoft Teams integration.",
+  "description": "Docker Swarm service monitoring dashboard with CPU, memory, and storage metrics. Requires container_cpu_usage_seconds_total, container_memory_working_set_bytes, container_spec_cpu_quota, container_spec_memory_limit_bytes, container_fs_usage_bytes, and container_fs_limit_bytes from cAdvisor. Configure Grafana notification policies for Alertmanager and Microsoft Teams.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
@@ -104,7 +103,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -197,7 +196,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "prometheus"
               },
               "exemplar": false,
               "expr": "100 * sum by (docker_service_name) (container_cpu_usage_seconds_total:sum_rate5m{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_cpu_requests:running{container_label_com_docker_swarm_service_name=~\"$service\"})",
@@ -210,7 +209,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "prometheus"
               },
               "exemplar": false,
               "expr": "100 * sum by (docker_service_name) (container_memory_working_set_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_memory_limits:running{container_label_com_docker_swarm_service_name=~\"$service\"})",
@@ -223,7 +222,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "prometheus"
               },
               "exemplar": false,
               "expr": "100 * sum by (docker_service_name) (container_fs_usage_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_fs_limit_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"})",
@@ -281,7 +280,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -322,7 +321,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "prometheus"
               },
               "exemplar": false,
               "expr": "100 * sum(container_cpu_usage_seconds_total:sum_rate5m{container_label_com_docker_swarm_service_name=~\"$service\"})",
@@ -338,7 +337,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -379,7 +378,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "prometheus"
               },
               "exemplar": false,
               "expr": "sum(container_memory_working_set_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"})",
@@ -395,7 +394,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -436,7 +435,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "prometheus"
               },
               "exemplar": false,
               "expr": "sum(container_fs_usage_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"})",
@@ -452,7 +451,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -517,7 +516,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "prometheus"
               },
               "exemplar": false,
               "expr": "sum by (docker_service_name) (container_cpu_usage_seconds_total:sum_rate5m{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_cpu_requests:running{container_label_com_docker_swarm_service_name=~\"$service\"})",
@@ -528,7 +527,7 @@
             {
               "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "prometheus"
               },
               "exemplar": false,
               "expr": "sum by (docker_service_name) (container_memory_working_set_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_memory_limits:running{container_label_com_docker_swarm_service_name=~\"$service\"})",
@@ -562,7 +561,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "uid": "prometheus"
           },
           "fieldConfig": {
             "defaults": {
@@ -622,4 +621,223 @@
             },
             "tooltip": { "mode": "single", "sort": "none" }
           },
-          "pluginVersion": "11.
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "exemplar": false,
+              "expr": "sum by (docker_service_name) (container_fs_usage_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (docker_service_name) (container_fs_limit_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "interval": "",
+              "legendFormat": "{{docker_service_name}} Storage",
+              "refId": "A"
+            }
+          ],
+          "title": "Service Storage Usage",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "center",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green" },
+                  { "color": "orange", "value": 80 },
+                  { "color": "red", "value": 90 }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value #cpu-usage"
+                },
+                "properties": [
+                  { "id": "displayName", "value": "CPU Usage" },
+                  { "id": "unit", "value": "percent" }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value #memory-usage"
+                },
+                "properties": [
+                  { "id": "displayName", "value": "Memory Usage" },
+                  { "id": "unit", "value": "percent" }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value #storage-usage"
+                },
+                "properties": [
+                  { "id": "displayName", "value": "Storage Usage" },
+                  { "id": "unit", "value": "percent" }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "container"
+                },
+                "properties": [
+                  { "id": "displayName", "value": "Container" },
+                  { "id": "custom.align", "value": "left" }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 24,
+            "x": 0,
+            "y": 14
+          },
+          "id": 87,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "fields": "",
+              "reducer": ["sum"],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": [
+              { "desc": true, "displayName": "CPU Usage" }
+            ]
+          },
+          "pluginVersion": "11.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "exemplar": false,
+              "expr": "100 * sum by (container_name) (container_cpu_usage_seconds_total:sum_rate5m{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (container_name) (container_cpu_requests:running{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "cpu-usage"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "exemplar": false,
+              "expr": "100 * sum by (container_name) (container_memory_working_set_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (container_name) (container_memory_limits:running{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "memory-usage"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
+              "exemplar": false,
+              "expr": "100 * sum by (container_name) (container_fs_usage_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"}) / sum by (container_name) (container_fs_limit_bytes:sum{container_label_com_docker_swarm_service_name=~\"$service\"})",
+              "format": "table",
+              "instant": true,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "storage-usage"
+            }
+          ],
+          "title": "Container Resource Usage ($service)",
+          "transformations": [
+            { "id": "merge", "options": {} },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "docker_service_name": true,
+                  "endpoint": true,
+                  "instance": true,
+                  "job": true,
+                  "namespace": true,
+                  "pod": true,
+                  "resource": true,
+                  "service": true
+                },
+                "indexByName": { "container_name": 0 },
+                "renameByName": { "container_name": "container" }
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "Overview",
+      "type": "row"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 40,
+  "style": "dark",
+  "tags": ["docker", "swarm", "prometheus"],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "service",
+        "options": [],
+        "query": "label_values(container_fs_usage_bytes:sum, container_label_com_docker_swarm_service_name)",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "30m", "1h", "2h", "1d"],
+    "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
+  },
+  "timezone": "",
+  "title": "Swarm Service Monitoring",
+  "uid": "swarm-service-mon",
+  "version": 27,
+  "weekStart": ""
+}
