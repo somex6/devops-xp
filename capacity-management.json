@@ -15,7 +15,7 @@
           "type": "dashboard"
         },
         "type": "dashboard"
-      }
+      } 
     ]
   },
   "description": "Service-level dashboard for Docker Swarm with hostname dropdown",
